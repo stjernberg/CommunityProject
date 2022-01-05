@@ -23,32 +23,49 @@ namespace CommunityProject.Models.Services
                 Title = createPost.Title,
                 Text = createPost.Text,
                 CreatedBy = createPost.CreatedBy,
-                Category = createPost.Category                
-
+                Category = createPost.Category    
             };
+
             return _postRepo.Create(post);
         }
 
       
         public bool Edit(int id, CreatePostViewModel editPost)
         {
-            throw new NotImplementedException();
+            
+            Post currentPost = _postRepo.FindById(id);
+
+            if (currentPost != null)
+            {
+                currentPost.Title = editPost.Title;
+                currentPost.Text = editPost.Text;
+                currentPost.CreatedBy = editPost.CreatedBy;
+                currentPost.Category = editPost.Category;               
+            };
+
+            return _postRepo.Update(currentPost);
         }
 
        
         public Post FindById(int id)
         {
-            throw new NotImplementedException();
+            return _postRepo.FindById(id);
         }
 
         public List<Post> GetAll()
         {
-            throw new NotImplementedException();
+            return _postRepo.GetAll();
         }
 
         public bool Remove(int id)
         {
-            throw new NotImplementedException();
+            Post post = _postRepo.FindById(id);
+
+            if (post != null)
+            {
+                return _postRepo.Delete(post);
+            }
+            return false;
         }
     }
 }

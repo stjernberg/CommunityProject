@@ -15,3 +15,4 @@ namespace CommunityProject.Models.Services
         bool Remove(int id);
     }
 }
+

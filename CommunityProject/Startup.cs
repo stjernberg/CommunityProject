@@ -1,4 +1,6 @@
 using CommunityProject.Models.Data;
+using CommunityProject.Models.Repos;
+using CommunityProject.Models.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -6,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +19,12 @@ namespace CommunityProject
     public class Startup
     {
 
-        public IConfiguration Configuration { get; }
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;        
+            Configuration = configuration;
         }
 
-        
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -32,13 +34,32 @@ namespace CommunityProject
             services.AddDbContext<CommunityDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            //Repos Ioc
-            services.AddScoped<ICommunityRepo, DatabaseCommunityRepo>();
+            //Repos and services
+            services.AddScoped<IPostRepo, DatabasePostRepo>();
+            services.AddScoped<IPostService, PostService>();
 
-            //Services Ioc
-            services.AddScoped<ICommunityService, CommunityService>();
+            //Cors
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "MyAllowAllOrigins",
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("*")
+                                      .AllowAnyHeader()
+                                      .AllowAnyMethod();
+                                  });
+            });
 
-            //services.AddControllersWithViews();
+            //Swagger
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Community API",
+                    Version = "v1"
+                });
+            });
+
             services.AddMvc().AddRazorRuntimeCompilation();
         }
 
@@ -61,6 +82,9 @@ namespace CommunityProject
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(option => { option.SwaggerEndpoint("/swagger/v1/swagger.json", "Community API"); });
 
             app.UseEndpoints(endpoints =>
             {

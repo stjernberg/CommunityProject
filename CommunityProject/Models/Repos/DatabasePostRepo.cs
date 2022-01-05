@@ -8,7 +8,7 @@ namespace CommunityProject.Models.Repos
 {
     public class DatabasePostRepo : IPostRepo
     {
-        private CommunityDbContext _communityDbContext;
+        private readonly CommunityDbContext _communityDbContext;
 
         public DatabasePostRepo(CommunityDbContext communityDbContext)
         {
@@ -21,24 +21,40 @@ namespace CommunityProject.Models.Repos
             return post;
         }
 
-        public bool Delete(Post post)
+        public List<Post> GetAll()
         {
-            throw new NotImplementedException();
+            return _communityDbContext.Posts.ToList();
         }
+
 
         public Post FindById(int id)
         {
-            throw new NotImplementedException();
+            return _communityDbContext.Posts.SingleOrDefault(post => post.Id == id);
         }
 
-        public List<Post> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
+      
         public bool Update(Post post)
         {
-            throw new NotImplementedException();
+            _communityDbContext.Posts.Update(post);
+            int updateChanges = _communityDbContext.SaveChanges();
+            if (updateChanges == 0)
+            {
+                return false;
+            }
+
+            return true;
         }
+
+        public bool Delete(Post post)
+        {
+            _communityDbContext.Posts.Remove(post);
+            int saveChanges = _communityDbContext.SaveChanges();
+            if (saveChanges == 0)
+            {
+                return false;
+            }
+            return true;
+            
+         }
     }
 }
