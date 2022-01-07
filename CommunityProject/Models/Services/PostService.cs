@@ -23,7 +23,7 @@ namespace CommunityProject.Models.Services
                 Title = createPost.Title,
                 Text = createPost.Text,
                 CreatedBy = createPost.CreatedBy,
-                Category = createPost.Category    
+                CategoryId = createPost.CategoryId
             };
 
             return _postRepo.Create(post);
@@ -40,7 +40,7 @@ namespace CommunityProject.Models.Services
                 currentPost.Title = editPost.Title;
                 currentPost.Text = editPost.Text;
                 currentPost.CreatedBy = editPost.CreatedBy;
-                currentPost.Category = editPost.Category;               
+                currentPost.CategoryId = editPost.CategoryId;               
             };
 
             return _postRepo.Update(currentPost);

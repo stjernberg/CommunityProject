@@ -35,8 +35,10 @@ namespace CommunityProject
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             //Repos and services
-            services.AddScoped<IPostRepo, DatabasePostRepo>();
+            services.AddScoped<IPostRepo, PostRepo>();
             services.AddScoped<IPostService, PostService>();
+            services.AddScoped<ICategoryRepo, CategoryRepo>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
             //Cors
             services.AddCors(options =>
@@ -80,6 +82,8 @@ namespace CommunityProject
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors("MyAllowAllOrigins");
 
             app.UseAuthorization();
 

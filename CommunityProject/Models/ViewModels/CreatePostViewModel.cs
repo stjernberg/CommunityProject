@@ -19,11 +19,14 @@ namespace CommunityProject.Models.ViewModels
         public string Text { get; set; }
 
         [Required]
-        [StringLength(100, MinimumLength = 3)]
-        [Display(Name = "Name")]
+        [StringLength(100, MinimumLength = 2)]
+        [Display(Name = "Author")]
         public string CreatedBy { get; set; }
 
+       
+        [Display(Name = "Category")]
         [Required]
-        public string Category { get; set; }
+        public int CategoryId { get; set; }
+        public List<Category> Categories { get; set; }
     }
 }
