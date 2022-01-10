@@ -25,7 +25,15 @@ namespace CommunityProject.Controllers
         [HttpGet]
         public IEnumerable<Post> Get()
         {
-            return _postService.GetAll();
+            //return _postService.GetAll();
+            IEnumerable<Post> list = _postService.GetAll();
+
+            foreach (var item in list)
+            {
+                item.Category.Posts = null;
+            }
+
+            return list;
         }
 
         // GET api/<PostController>/5

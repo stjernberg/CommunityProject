@@ -10,11 +10,11 @@ namespace CommunityProject.Models.Services
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepo _categoryRepo;
-        //private IPostRepo _postRepo;
-        public CategoryService(ICategoryRepo categoryRepo)
+        private IPostRepo _postRepo;
+        public CategoryService(ICategoryRepo categoryRepo, IPostRepo postRepo)
         {
             _categoryRepo = categoryRepo;
-            //_postRepo = postRepo;
+            _postRepo = postRepo;
         }
         public Category Create(CreateCategoryViewModel createCategory)
         {
@@ -55,15 +55,33 @@ namespace CommunityProject.Models.Services
             return _categoryRepo.Update(currentCategory);
         }
 
-        public bool Remove(int id)
+        public StatusResult Remove(int id)
         {
             Category category = _categoryRepo.FindById(id);
 
+            //If category is connected to post don't delete
             if (category != null)
             {
-                return _categoryRepo.Delete(category);
+                if (_postRepo.CategoryPost(id) != 0)
+                {
+                    return StatusResult.LinkToOther;
+                }
+
+                if (_categoryRepo.Delete(category))
+                {
+                    return StatusResult.Successful;
+                }
+              
             }
-            return false;
+
+            return StatusResult.Failed;
         }
+    }
+
+    public enum StatusResult
+    {
+        Successful, //Ok 200
+        Failed, //bad request 400
+        LinkToOther //conflict status code 409
     }
 }

@@ -12,6 +12,6 @@ namespace CommunityProject.Models.Services
         Category FindById(int id);
         Category Create(CreateCategoryViewModel createCategory);
         bool Edit(int id, CreateCategoryViewModel editCategory);
-        bool Remove(int id);
+        StatusResult Remove(int id);
     }
 }

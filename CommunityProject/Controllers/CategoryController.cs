@@ -61,9 +61,20 @@ namespace CommunityProject.Controllers
 
         // DELETE api/<CategoryController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            _categoryService.Remove(id);
+            switch (_categoryService.Remove(id))
+            {
+                case StatusResult.Successful:
+                    return Ok();
+                case StatusResult.Failed:
+                    return BadRequest(); 
+                case StatusResult.LinkToOther:
+                    return Conflict();
+                    //Shouldn't happen 
+                default: return NotFound();
+            }
+            
         }
     }
 }

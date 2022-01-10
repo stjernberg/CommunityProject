@@ -12,5 +12,6 @@ namespace CommunityProject.Models.Repos
         List<Post> GetAll();
         bool Update(Post post);
         bool Delete(Post post);
+        int CategoryPost(int categoryId);
     }
 }

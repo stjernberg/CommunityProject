@@ -21,13 +21,13 @@ namespace CommunityProject.Models.Repos
             _communityDbContext.SaveChanges();
             return post;
         }
-
+        
         public List<Post> GetAll()
         {
             return _communityDbContext.Posts.Include(post => post.Category).ToList();
         }
 
-
+      
         public Post FindById(int id)
         {
             return _communityDbContext.Posts.Include(post => post.Category).SingleOrDefault(post => post.Id == id);
@@ -57,5 +57,10 @@ namespace CommunityProject.Models.Repos
             return true;
             
          }
+
+        public int CategoryPost(int categoryId)
+        {
+            return _communityDbContext.Posts.Count(p => p.CategoryId == categoryId);
+        }
     }
 }
