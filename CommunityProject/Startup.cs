@@ -1,9 +1,12 @@
+using CommunityProject.Models;
 using CommunityProject.Models.Data;
 using CommunityProject.Models.Repos;
 using CommunityProject.Models.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace CommunityProject
 {
@@ -34,11 +39,51 @@ namespace CommunityProject
             services.AddDbContext<CommunityDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddIdentity<AppUser, IdentityRole>()
+               .AddEntityFrameworkStores<CommunityDbContext>()
+               .AddDefaultTokenProviders();
+
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings  
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                options.LoginPath = "/Account/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login  
+                options.LogoutPath = "/Account/Logout"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout  
+                options.AccessDeniedPath = "/Account/AccessDenied"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied  
+                options.SlidingExpiration = true;
+            });
+
+
+
+            //JWT Token
+
+            services.AddAuthentication()
+                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, jwtOption =>
+                 {
+                     jwtOption.SaveToken = true;
+                     jwtOption.TokenValidationParameters = new TokenValidationParameters()
+                     {
+                         ValidateActor = true,
+                         ValidateAudience = true,
+                         ValidateLifetime = true,
+                         ClockSkew = TimeSpan.FromMinutes(5),
+                         ValidIssuer = Configuration["JWTConfiguration:Issuer"],
+                         ValidAudience = Configuration["JWTConfiguration:Audience"],
+                         IssuerSigningKey = new SymmetricSecurityKey(
+                             Encoding.UTF8.GetBytes(Configuration["JWTConfiguration:SigningKey"]))
+                     };
+                 }
+             );
+
+
             //Repos and services
             services.AddScoped<IPostRepo, PostRepo>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<ICategoryRepo, CategoryRepo>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IAuthService, AuthService>();
 
             //Cors
             services.AddCors(options =>
@@ -78,13 +123,14 @@ namespace CommunityProject
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseCors("MyAllowAllOrigins");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseSwagger();
