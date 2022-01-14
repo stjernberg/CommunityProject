@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using CommunityProject.Swagger;
 
 namespace CommunityProject
 {
@@ -55,7 +56,15 @@ namespace CommunityProject
                 options.SlidingExpiration = true;
             });
 
-
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+            });
 
             //JWT Token
 
@@ -69,14 +78,15 @@ namespace CommunityProject
                          ValidateAudience = true,
                          ValidateLifetime = true,
                          ClockSkew = TimeSpan.FromMinutes(5),
-                         ValidIssuer = Configuration["JWTConfiguration:Issuer"],
-                         ValidAudience = Configuration["JWTConfiguration:Audience"],
+                         ValidIssuer = Configuration["AuthConfiguration:Issuer"],
+                         ValidAudience = Configuration["AuthConfiguration:Audience"],
                          IssuerSigningKey = new SymmetricSecurityKey(
-                             Encoding.UTF8.GetBytes(Configuration["JWTConfiguration:SigningKey"]))
+                             Encoding.UTF8.GetBytes(Configuration["AuthConfiguration:SigningKey"]))
                      };
                  }
              );
 
+            
 
             //Repos and services
             services.AddScoped<IPostRepo, PostRepo>();
@@ -86,26 +96,30 @@ namespace CommunityProject
             services.AddScoped<IAuthService, AuthService>();
 
             //Cors
+            //Cors
             services.AddCors(options =>
             {
-                options.AddPolicy(name: "MyAllowAllOrigins",
+                options.AddPolicy(name: "CorsPolicy",
                                   builder =>
                                   {
-                                      builder.WithOrigins("*")
+                                      builder.WithOrigins("http://localhost:3000")
                                       .AllowAnyHeader()
-                                      .AllowAnyMethod();
+                                      .AllowAnyMethod()
+                                      .AllowCredentials();
+                                     
                                   });
             });
 
+
+
             //Swagger
-            services.AddSwaggerGen(options =>
+            SwaggerConfiger.SwaggerSetup(services, new OpenApiInfo()
             {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Community API",
-                    Version = "v1"
-                });
+                Version = "v1",
+                Title = "CommunitProject",
+                Description = "ASP.NET Core 3.1 with API"
             });
+
 
             services.AddMvc().AddRazorRuntimeCompilation();
         }
@@ -123,12 +137,12 @@ namespace CommunityProject
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseCors("MyAllowAllOrigins");
+            app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
             app.UseAuthorization();

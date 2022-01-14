@@ -1,17 +1,15 @@
 ﻿using CommunityProject.Models;
-using CommunityProject.Models.Repos;
 using CommunityProject.Models.Services;
 using CommunityProject.Models.ViewModels;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CommunityProject.Controllers
 {
+  
     [Route("api/posts")]
     [ApiController]
     public class PostController : ControllerBase

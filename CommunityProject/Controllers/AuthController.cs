@@ -9,11 +9,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CommunityProject.Controllers
 {
+    [EnableCors("CorsPolicy")]
     [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -32,18 +34,39 @@ namespace CommunityProject.Controllers
             _authService = authService;
         }
 
+        //[AllowAnonymous]
+        //[HttpPost("login")]
+        //public async Task<IActionResult> Login(string userName, string password)
+        //{
+
+        //    var result = await _signInManager.PasswordSignInAsync(userName, password, false, true);
+
+        //    if (!result.Succeeded)
+        //    {
+        //        return Unauthorized();
+        //    }
+        //    AppUser user = await _userManager.FindByNameAsync(userName);
+        //    IList<string> userRoles = await _userManager.GetRolesAsync(user);
+
+        //    string jwtToken = _authService.GenerateJwtToken(user, userRoles, User.Claims);
+
+        //    return Ok(jwtToken);
+
+        //} 
+        
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login(string userName, string password)
+        public async Task<IActionResult> Login(LoginViewModel userLogin)
         {
 
-            var result = await _signInManager.PasswordSignInAsync(userName, password, false, true);
+          
+            Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(userLogin.UserName, userLogin.Password, false, false);
 
             if (!result.Succeeded)
             {
                 return Unauthorized();
             }
-            AppUser user = await _userManager.FindByNameAsync(userName);
+            AppUser user = await _userManager.FindByNameAsync(userLogin.UserName);
             IList<string> userRoles = await _userManager.GetRolesAsync(user);
 
             string jwtToken = _authService.GenerateJwtToken(user, userRoles, User.Claims);

@@ -35,11 +35,11 @@ namespace CommunityProject.Models.Services
 
             claimsList.AddRange(claims);
 
-            int expiraionDays = _configuration.GetValue<int>("JWTConfiguration:TokenExpirationDays");
-            byte[] signingKey = Encoding.UTF8.GetBytes(_configuration.GetValue<string>("JWTConfiguration:SigningKey"));
+            int expiraionDays = _configuration.GetValue<int>("AuthConfiguration:TokenExpirationDays");
+            byte[] signingKey = Encoding.UTF8.GetBytes(_configuration.GetValue<string>("AuthConfiguration:SigningKey"));
             JwtSecurityToken jwtSecurityToken = new JwtSecurityToken(
-                issuer: _configuration.GetValue<string>("JWTConfiguration:Issuer"),
-                audience: _configuration.GetValue<string>("JWTConfiguration:Audience"),
+                issuer: _configuration.GetValue<string>("AuthConfiguration:Issuer"),
+                audience: _configuration.GetValue<string>("AuthConfiguration:Audience"),
                 claims: claimsList,
                 expires: DateTime.UtcNow.AddDays(expiraionDays),
                 notBefore: DateTime.UtcNow,
