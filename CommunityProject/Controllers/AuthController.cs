@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,10 +24,11 @@ namespace CommunityProject.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IAuthService _authService;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AuthController(
             SignInManager<AppUser> signInManager,
-            UserManager<AppUser> userManager,
+            UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager,
             IAuthService authService)
         {
             _signInManager = signInManager;
@@ -34,32 +36,14 @@ namespace CommunityProject.Controllers
             _authService = authService;
         }
 
-        //[AllowAnonymous]
-        //[HttpPost("login")]
-        //public async Task<IActionResult> Login(string userName, string password)
-        //{
 
-        //    var result = await _signInManager.PasswordSignInAsync(userName, password, false, true);
 
-        //    if (!result.Succeeded)
-        //    {
-        //        return Unauthorized();
-        //    }
-        //    AppUser user = await _userManager.FindByNameAsync(userName);
-        //    IList<string> userRoles = await _userManager.GetRolesAsync(user);
-
-        //    string jwtToken = _authService.GenerateJwtToken(user, userRoles, User.Claims);
-
-        //    return Ok(jwtToken);
-
-        //} 
-        
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginViewModel userLogin)
         {
 
-          
+
             Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(userLogin.UserName, userLogin.Password, false, false);
 
             if (!result.Succeeded)
@@ -75,12 +59,30 @@ namespace CommunityProject.Controllers
 
         }
 
-        [HttpGet]
+
+
+
+        [HttpGet("getUser")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public IActionResult TestJwtToken()
+        public async Task<IActionResult> GetUser()
         {
-            return Ok("It's working!");
+            //var user = await GetCurrentUserAsync();
+            string userName = HttpContext.User.Identity.Name;
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user != null)
+            {
+                return Ok(user);
+
+            }
+            return BadRequest("Error");
         }
+
+
+
+
+
+
+
 
         [AllowAnonymous]
         [HttpPost("register")]
@@ -110,5 +112,14 @@ namespace CommunityProject.Controllers
             }
             return BadRequest(ModelState);
         }
+
+        //[HttpDelete("{id}")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //public void Delete(string id)
+        //{
+        //    var role = await _roleManager.FindByIdAsync(id);
+        //    var result = await _roleManager.DeleteAsync(role);
+        //    return Ok(result);
+        //}
     }
 }
