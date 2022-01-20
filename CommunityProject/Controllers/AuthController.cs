@@ -34,6 +34,7 @@ namespace CommunityProject.Controllers
             _signInManager = signInManager;
             _userManager = userManager;
             _authService = authService;
+            _roleManager = roleManager;
         }
 
 
@@ -44,7 +45,7 @@ namespace CommunityProject.Controllers
         {
 
 
-            Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(userLogin.UserName, userLogin.Password, false, false);
+            var result = await _signInManager.PasswordSignInAsync(userLogin.UserName, userLogin.Password, false, false);
 
             if (!result.Succeeded)
             {
@@ -62,13 +63,16 @@ namespace CommunityProject.Controllers
 
 
 
+
+
         [HttpGet("getUser")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetUser()
         {
-            //var user = await GetCurrentUserAsync();
+
             string userName = HttpContext.User.Identity.Name;
             var user = await _userManager.FindByNameAsync(userName);
+
             if (user != null)
             {
                 return Ok(user);
@@ -78,7 +82,72 @@ namespace CommunityProject.Controllers
         }
 
 
+        //[HttpGet("CheckRole")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //public Task<IActionResult> CheckRole()
+        //{
+    //}
 
+
+        //[HttpGet("CheckRole")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //public Task<IActionResult> CheckRole()
+        //{
+        //    string roleMessage ="";
+        //if (User.IsInRole("Admin"))
+        //{
+        //    roleMessage = "Admin";
+        //}
+
+        //if (User.IsInRole("SuperAdmin"))
+        //{
+        //    roleMessage = "SuperAdmin";
+        //}
+
+        //else 
+        //{
+        //    roleMessage = "No admin roles";
+        //}
+
+        //var userName = HttpContext.User.Identity.Name;
+        //var user = await _userManager.FindByNameAsync(userName);
+
+        //var result = _userManager.GetRolesAsync(User).Result.Single();
+
+
+        //if (AcceptedAtActionResult  "Admin"))
+        //{
+        //    roleMessage = "Admin";
+        //}
+
+        //if (User.IsInRole("SuperAdmin"))
+        //{
+        //    roleMessage = "SuperAdmin";
+        //}
+
+        //else if(result != "SuperAdmin" || result != "Admin") 
+        //{
+        //    roleMessage = "No admin roles";
+        //}
+
+
+
+        //return Ok(roleMessage);
+
+        //if (userRole != null)
+        //{
+        //    return Ok(userRole);
+        //}
+        //return NotFound();
+
+
+        //string existingRole = _userManager.GetRolesAsync(user).Result.Single();
+        //if (existingRole != null)
+        //{
+        //    return Ok(existingRole);
+
+        //}
+        //return Ok("User has no role");
 
 
 

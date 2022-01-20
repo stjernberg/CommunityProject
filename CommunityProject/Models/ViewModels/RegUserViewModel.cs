@@ -20,16 +20,19 @@ namespace CommunityProject.Models.ViewModels
         public string LastName { get; set; }
 
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        [Phone]
-        public string PhoneNr { get;  set; }
-       
-        [Required]
         [Display(Name = "Username")]
         [StringLength(40, MinimumLength = 3)]
         public string UserName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [Phone]
+        public string PhoneNr { get;  set; }
+       
+      
 
         [Required]
         [Display(Name = "Password")]

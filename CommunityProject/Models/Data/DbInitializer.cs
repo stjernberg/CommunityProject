@@ -28,24 +28,24 @@ namespace CommunityProject.Models.Data
                 }
 
                 //Create user and add to SuperAdmin role
-                AppUser appUser = new AppUser
+                AppUser user = new AppUser
                 {
                     FirstName = "Super",
                     LastName = "SuperAdminSon",
                     UserName = "SuperAdmin",
                     Email = "superadmin@app.com",
-                    PhoneNr = "13423"
+                    PhoneNr = "13423123123"
                    
                 };
 
-                IdentityResult userResult = await userManager.CreateAsync(appUser, "Super183?");
+                IdentityResult userResult = await userManager.CreateAsync(user, "Super183?");
 
                 if (!userResult.Succeeded)
                 {
                     ErrorMessages(userResult);
                 }
 
-                userManager.AddToRoleAsync(appUser, role.Name).Wait();
+                userManager.AddToRoleAsync(user, role.Name).Wait();
             }
 
             //If there is no admin role
@@ -67,7 +67,7 @@ namespace CommunityProject.Models.Data
                     LastName = "AdminSon",
                     UserName = "Admin",
                     Email = "admin@app.com",
-                    PhoneNr = "1674423"
+                    PhoneNr = "1674423234234"
 
                 };
 

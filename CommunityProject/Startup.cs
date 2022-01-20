@@ -45,16 +45,16 @@ namespace CommunityProject
                .AddDefaultTokenProviders();
 
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                // Cookie settings  
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-                options.LoginPath = "/Account/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login  
-                options.LogoutPath = "/Account/Logout"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout  
-                options.AccessDeniedPath = "/Account/AccessDenied"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied  
-                options.SlidingExpiration = true;
-            });
+            //services.ConfigureApplicationCookie(options =>
+            //{
+            //    // Cookie settings  
+            //    options.Cookie.HttpOnly = true;
+            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+            //    options.LoginPath = "/Account/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login  
+            //    options.LogoutPath = "/Account/Logout"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout  
+            //    options.AccessDeniedPath = "/Account/AccessDenied"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied  
+            //    options.SlidingExpiration = true;
+            //});
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -86,7 +86,16 @@ namespace CommunityProject
                  }
              );
 
-            
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+            });
+
 
             //Repos and services
             services.AddScoped<IPostRepo, PostRepo>();

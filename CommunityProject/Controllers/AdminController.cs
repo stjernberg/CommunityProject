@@ -1,9 +1,11 @@
 ﻿using CommunityProject.Models;
+using CommunityProject.Models.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,12 +34,29 @@ namespace CommunityProject.Controllers
             return _roleManager.Roles.ToList();
         }
 
-        //// GET api/<AdminController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{ 
-        //    return "value";
-        //}
+        [HttpGet("getRole/{id}")]
+        public async Task<IActionResult> GetRole(string id)
+        {
+
+            var role = await _roleManager.FindByIdAsync(id);
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(role);
+        }
+
+
+        [HttpGet("allUsers")]
+        public List<AppUser> AllUsers()
+        {
+            return _userManager.Users.ToList();
+        }
+
+
+
 
         // POST api/<AdminController> 
         [HttpPost("createRole")]
@@ -52,14 +71,11 @@ namespace CommunityProject.Controllers
             //{
             //    return Ok(result);
             //}
+
             //return BadRequest("Error");
         }
 
-        //// PUT api/<AdminController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+
 
         //DELETE api/<AdminController>/5
         [HttpDelete("deleteRole/{id}")]
@@ -77,21 +93,117 @@ namespace CommunityProject.Controllers
 
                 }
             }
-            
+
             return BadRequest("Error");
         }
-            //if (role != null)
-            //{
-            //    var result = await _roleManager.DeleteAsync(role);
 
-            //    if (result.Succeeded)
-            //    {
-            //        return Ok(result);
-            //    }
-            //}
+        [HttpDelete("deleteUser/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = _userManager.FindByIdAsync(id);
 
+            if (user != null)
+            {
+                var result = await _userManager.DeleteAsync(await user);
+                if (result.Succeeded)
+                {
+                    return Ok(result);
+                }
+            }
 
-            //return BadRequest("Error");
-            // }  
+            return BadRequest("Error");
         }
+
+        [HttpGet("usersWithRole/{id}")]
+        public async Task<IActionResult> ManageUserRoles(string id)
+        {
+
+            var role = await _roleManager.FindByIdAsync(id);
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            ManageRolesViewModel rolesViewModel = new ManageRolesViewModel();
+
+            rolesViewModel.Role = role;
+
+            rolesViewModel.UserWithRole = await _userManager.GetUsersInRoleAsync(role.Name);
+
+            rolesViewModel.UserNoRole = _userManager.Users.ToList();
+
+            foreach (var item in rolesViewModel.UserWithRole)
+            {
+                rolesViewModel.UserNoRole.Remove(item);
+            }
+
+            return Ok(rolesViewModel);
+
+
+        }
+
+
+
+        [HttpGet("addToRole/{userId}/{roleId}")]
+        public async Task<IActionResult> AddToRole(string userId, string roleId)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId);
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, role.Name);
+
+            if (result.Succeeded)
+            {
+                return Ok(result);
+            }
+
+
+            return BadRequest("User could not be added to role");
+
+
+        }
+
+        [HttpGet("removeFormRole")]
+        public async Task<IActionResult> RemoveFromRole(string userId, string roleId)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId);
+
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userManager.RemoveFromRoleAsync(user, role.Name);
+
+            if (result.Succeeded)
+            {
+                return Ok(result);
+            }
+
+
+            return BadRequest("User could not be removed from the role");
+
+        }
+    }
 }
