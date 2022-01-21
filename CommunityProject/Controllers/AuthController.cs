@@ -63,8 +63,6 @@ namespace CommunityProject.Controllers
 
 
 
-
-
         [HttpGet("getUser")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetUser()
@@ -72,7 +70,8 @@ namespace CommunityProject.Controllers
 
             string userName = HttpContext.User.Identity.Name;
             var user = await _userManager.FindByNameAsync(userName);
-
+           
+            
             if (user != null)
             {
                 return Ok(user);
@@ -82,113 +81,64 @@ namespace CommunityProject.Controllers
         }
 
 
-        //[HttpGet("CheckRole")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        //public Task<IActionResult> CheckRole()
-        //{
-    //}
+       
+        [HttpGet("CheckRole")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> CheckUserRole()
+        {
+            string userName = HttpContext.User.Identity.Name;
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return BadRequest("user not found");
+               
+            }
 
+            IList<string> roles = await _userManager.GetRolesAsync(user);
 
-        //[HttpGet("CheckRole")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        //public Task<IActionResult> CheckRole()
-        //{
-        //    string roleMessage ="";
-        //if (User.IsInRole("Admin"))
-        //{
-        //    roleMessage = "Admin";
-        //}
+            return Ok(roles);
+        }
 
-        //if (User.IsInRole("SuperAdmin"))
-        //{
-        //    roleMessage = "SuperAdmin";
-        //}
-
-        //else 
-        //{
-        //    roleMessage = "No admin roles";
-        //}
-
-        //var userName = HttpContext.User.Identity.Name;
-        //var user = await _userManager.FindByNameAsync(userName);
-
-        //var result = _userManager.GetRolesAsync(User).Result.Single();
-
-
-        //if (AcceptedAtActionResult  "Admin"))
-        //{
-        //    roleMessage = "Admin";
-        //}
-
-        //if (User.IsInRole("SuperAdmin"))
-        //{
-        //    roleMessage = "SuperAdmin";
-        //}
-
-        //else if(result != "SuperAdmin" || result != "Admin") 
-        //{
-        //    roleMessage = "No admin roles";
-        //}
-
-
-
-        //return Ok(roleMessage);
-
-        //if (userRole != null)
-        //{
-        //    return Ok(userRole);
-        //}
-        //return NotFound();
-
-
-        //string existingRole = _userManager.GetRolesAsync(user).Result.Single();
-        //if (existingRole != null)
-        //{
-        //    return Ok(existingRole);
-
-        //}
-        //return Ok("User has no role");
-
+                
 
 
 
 
         [AllowAnonymous]
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegUserViewModel regUser)
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(RegUserViewModel regUser)
+    {
+        if (ModelState.IsValid)
         {
-            if (ModelState.IsValid)
+            AppUser user = new AppUser()
             {
-                AppUser user = new AppUser()
-                {
-                    FirstName = regUser.FirstName,
-                    LastName = regUser.LastName,
-                    UserName = regUser.UserName,
-                    Email = regUser.Email,
-                    PhoneNr = regUser.PhoneNr
-                };
-                IdentityResult result = await _userManager.CreateAsync(user, regUser.Password);
+                FirstName = regUser.FirstName,
+                LastName = regUser.LastName,
+                UserName = regUser.UserName,
+                Email = regUser.Email,
+                PhoneNr = regUser.PhoneNr
+            };
+            IdentityResult result = await _userManager.CreateAsync(user, regUser.Password);
 
-                if (result.Succeeded)
-                {
-                    return Ok("User created");
-                }
-
-                foreach (var item in result.Errors)
-                {
-                    ModelState.AddModelError(item.Code, item.Description);
-                }
+            if (result.Succeeded)
+            {
+                return Ok("User created");
             }
-            return BadRequest(ModelState);
-        }
 
-        //[HttpDelete("{id}")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        //public void Delete(string id)
-        //{
-        //    var role = await _roleManager.FindByIdAsync(id);
-        //    var result = await _roleManager.DeleteAsync(role);
-        //    return Ok(result);
-        //}
+            foreach (var item in result.Errors)
+            {
+                ModelState.AddModelError(item.Code, item.Description);
+            }
+        }
+        return BadRequest(ModelState);
+    }
+
+        [HttpPost("logout")]
+        public void Logout()
+        {
+              _signInManager.SignOutAsync();
+            
+           
+         }
     }
 }

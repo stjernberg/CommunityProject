@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace CommunityProject.Controllers
 {
+    //[Authorize(Roles = "Admin, SuperAdmin")]
     [Route("api/admin")]
     [ApiController]
     public class AdminController : ControllerBase
@@ -176,7 +177,7 @@ namespace CommunityProject.Controllers
 
         }
 
-        [HttpGet("removeFormRole")]
+        [HttpGet("removeFromRole/{userId}/{roleId}")]
         public async Task<IActionResult> RemoveFromRole(string userId, string roleId)
         {
             var role = await _roleManager.FindByIdAsync(roleId);
