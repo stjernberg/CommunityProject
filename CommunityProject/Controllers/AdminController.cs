@@ -56,26 +56,49 @@ namespace CommunityProject.Controllers
             return _userManager.Users.ToList();
         }
 
-
-
-
-        // POST api/<AdminController> 
         [HttpPost("createRole")]
-        public async Task<IActionResult> CreateRole(string roleName)
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateRole([FromBody] CreateRoleViewModel createRole)
         {
-            IdentityRole role = new IdentityRole(roleName);
+            IdentityRole role = new IdentityRole(createRole.RoleName);
+
 
             var result = await _roleManager.CreateAsync(role);
+            if (role != null)
+            {
+                Response.StatusCode = 201;
+            }
+            else
+            {
+                Response.StatusCode = 400;
+            }
+
             return Ok(result);
-
-            //if (result.Succeeded)
-            //{
-            //    return Ok(result);
-            //}
-
-            //return BadRequest("Error");
         }
 
+        
+
+
+        //        // POST api/<AdminController> 
+        //        [ProducesResponseType(201)]
+        //        [ProducesResponseType(400)]
+        //        [HttpPost("createRole")]
+        //        public async Task<IActionResult> CreateRole(string roleName)
+        //        {
+        //            IdentityRole role = new IdentityRole(roleName);
+
+        //            var result = await _roleManager.CreateAsync(role);
+        //            return Ok(result);
+        //        }
+        //                if (result.Succeeded)
+        //                {
+        //                    return Ok(result);
+        //    }
+
+        //                return BadRequest("Error: User could not be created");
+
+        //}
 
 
         //DELETE api/<AdminController>/5

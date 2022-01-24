@@ -133,6 +133,65 @@ namespace CommunityProject.Controllers
         return BadRequest(ModelState);
     }
 
+        [HttpGet("editUser/{id}")]
+        public async Task<IActionResult> EditUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            
+            var model = new EditUserViewModel
+            {
+                //Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNr = user.PhoneNr
+            };
+
+            return Ok(model);
+        }
+
+        [AllowAnonymous]
+        [HttpPut("editUser/{id}")]
+        public async Task<IActionResult> EditUser(string id, EditUserViewModel model)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.UserName = model.UserName;
+                user.Email = model.Email;
+                user.PhoneNr = model.PhoneNr;
+
+                var result = await _userManager.UpdateAsync(user);
+
+                if (result.Succeeded)
+                {
+                    return Ok(model);
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return BadRequest("User could not be edited");
+            }
+        }
+
+       
         [HttpPost("logout")]
         public void Logout()
         {
