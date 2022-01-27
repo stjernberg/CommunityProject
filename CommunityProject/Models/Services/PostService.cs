@@ -1,5 +1,6 @@
 ﻿using CommunityProject.Models.Repos;
 using CommunityProject.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,19 +12,24 @@ namespace CommunityProject.Models.Services
     {
 
         private readonly IPostRepo _postRepo;
-     
+      
+
         public PostService(IPostRepo postRepo)
         {
             _postRepo = postRepo;
+           
         }
         public Post Create(CreatePostViewModel createPost)
         {
+                       
             Post post = new Post()
             {
+                
                 Title = createPost.Title,
                 Text = createPost.Text,
                 CreatedBy = createPost.CreatedBy,
                 CategoryId = createPost.CategoryId
+              
             };
 
             return _postRepo.Create(post);

@@ -34,6 +34,9 @@ namespace CommunityProject.Models.Repos
         }
 
       
+        //.Include(post => post.Category)
+
+
         public bool Update(Post post)
         {
             _communityDbContext.Posts.Update(post);

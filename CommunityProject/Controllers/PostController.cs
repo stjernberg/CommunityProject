@@ -12,6 +12,7 @@ namespace CommunityProject.Controllers
   
     [Route("api/posts")]
     [ApiController]
+   
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
@@ -26,19 +27,30 @@ namespace CommunityProject.Controllers
             //return _postService.GetAll();
             IEnumerable<Post> list = _postService.GetAll();
 
-            foreach (var item in list)
-            {
-                item.Category.Posts = null;
-            }
+            //foreach (var item in list)
+            //{
+            //    item.Category.Posts = null;
+            //}
 
             return list;
         }
 
         // GET api/<PostController>/5
         [HttpGet("{id}")]
-        public Post Get(int id)
+        public Post GetPost(int id)
         {
-            return _postService.FindById(id);
+            Post post = _postService.FindById(id);
+            //post.Category = null;
+           
+            return post;
+            ////post.Category.Posts = null;
+
+            //post.Category.Posts = null;
+            //if (post == null)
+            //{
+            //    return BadRequest("post");
+            //}
+            //return post;
         }
 
         // POST api/<PostController>
@@ -47,6 +59,7 @@ namespace CommunityProject.Controllers
         [ProducesResponseType(400)]
         public void Post([FromBody] CreatePostViewModel createPost)
         {
+            
            Post post = _postService.Create(createPost);
             if (post != null)
             {

@@ -80,25 +80,7 @@ namespace CommunityProject.Controllers
         
 
 
-        //        // POST api/<AdminController> 
-        //        [ProducesResponseType(201)]
-        //        [ProducesResponseType(400)]
-        //        [HttpPost("createRole")]
-        //        public async Task<IActionResult> CreateRole(string roleName)
-        //        {
-        //            IdentityRole role = new IdentityRole(roleName);
-
-        //            var result = await _roleManager.CreateAsync(role);
-        //            return Ok(result);
-        //        }
-        //                if (result.Succeeded)
-        //                {
-        //                    return Ok(result);
-        //    }
-
-        //                return BadRequest("Error: User could not be created");
-
-        //}
+    
 
 
         //DELETE api/<AdminController>/5
