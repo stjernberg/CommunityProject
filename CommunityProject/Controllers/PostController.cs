@@ -20,17 +20,13 @@ namespace CommunityProject.Controllers
         {
             _postService = postService;
         }
-        // GET: api/<PostController>
+       
         [HttpGet]
         public IEnumerable<Post> Get()
         {
-            //return _postService.GetAll();
+            
             IEnumerable<Post> list = _postService.GetAll();
-
-            //foreach (var item in list)
-            //{
-            //    item.Category.Posts = null;
-            //}
+           
 
             return list;
         }
@@ -40,20 +36,13 @@ namespace CommunityProject.Controllers
         public Post GetPost(int id)
         {
             Post post = _postService.FindById(id);
-            //post.Category = null;
+          
            
             return post;
-            ////post.Category.Posts = null;
-
-            //post.Category.Posts = null;
-            //if (post == null)
-            //{
-            //    return BadRequest("post");
-            //}
-            //return post;
+            
         }
 
-        // POST api/<PostController>
+      
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
